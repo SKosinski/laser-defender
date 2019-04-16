@@ -8,15 +8,22 @@ public class Player : MonoBehaviour
     [Header ("Player")]
     [SerializeField] float moveSpeed = 10f;
     [SerializeField] float padding = 0.1f;
-    [SerializeField] int health = 200;
+    [SerializeField] public int health = 200;
+    [SerializeField] AudioClip deathClip;
+    [SerializeField] [Range(0, 1)] float deathSoundVolume = 0.7f;
+    [SerializeField] GameObject explosionVFXPrefab;
 
     [Header ("Projectile")]
     [SerializeField] GameObject laserPrefab;
     [SerializeField] float projectileSpeed = 10f;
     [SerializeField] float projectileFiringPeriod = 0.3f;
+    [SerializeField] AudioClip laserClip;
+    [SerializeField] [Range(0, 1)] float laserSoundVolume = 0.7f;
 
 
     Coroutine firingCoroutine;
+
+
 
     float xMin;
     float xMax;
@@ -56,6 +63,7 @@ public class Player : MonoBehaviour
                 laserPrefab,
                 transform.position,
                 Quaternion.identity) as GameObject;
+            AudioSource.PlayClipAtPoint(laserClip, Camera.main.transform.position, laserSoundVolume);
             laser.GetComponent<Rigidbody2D>().velocity = new Vector2(0, projectileSpeed);
             yield return new WaitForSeconds(projectileFiringPeriod);
         }
@@ -69,12 +77,25 @@ public class Player : MonoBehaviour
 
     private void ProcessHit(DamageDealer damageDealer)
     {
+        damageDealer.Hit();
         health -= damageDealer.GetDamage();
         if (health <= 0)
         {
-            damageDealer.Hit();
-            Destroy(gameObject);
+            health = 0;
+            FindObjectOfType<GameSession>().UpdateHealth();
+            PlayerDeath(damageDealer);
+            FindObjectOfType<SceneLoader>().LoadGameOver();
         }
+        FindObjectOfType<GameSession>().UpdateHealth();
+    }
+
+    private void PlayerDeath(DamageDealer damageDealer)
+    {
+        AudioSource.PlayClipAtPoint(deathClip, Camera.main.transform.position, deathSoundVolume);
+        damageDealer.Hit();
+        Destroy(gameObject);
+        GameObject explosionVFX = Instantiate(explosionVFXPrefab, transform.position, Quaternion.identity) as GameObject;
+        Destroy(explosionVFX, 1f);
     }
 
     private void SetUpMoveBoundaries()

@@ -5,13 +5,21 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-
+    [Header ("Enemy")]
     [SerializeField] float health = 100;
-    [SerializeField] float shotCounter;
+    [SerializeField] GameObject explosionVFXPrefab;
+    [SerializeField] AudioClip deathClip;
+    [SerializeField] [Range(0, 1)] float deathSoundVolume = 0.7f;
+
+    [Header("Projectile")]
+    float shotCounter;
     [SerializeField] float minTimeBetweenShots = 0.2f;
     [SerializeField] float maxTimeBetweenShots = 3f;
     [SerializeField] GameObject laserPrefab;
     [SerializeField] float projectileSpeed = 10f;
+    [SerializeField] AudioClip laserClip;
+    [SerializeField] [Range(0, 1)] float laserSoundVolume = 0.7f;
+
 
 
     // Start is called before the first frame update
@@ -43,6 +51,7 @@ public class Enemy : MonoBehaviour
             transform.position,
             Quaternion.identity) as GameObject;
         laser.GetComponent<Rigidbody2D>().velocity = new Vector2(0, -projectileSpeed);
+        AudioSource.PlayClipAtPoint(laserClip, Camera.main.transform.position, laserSoundVolume);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -58,7 +67,16 @@ public class Enemy : MonoBehaviour
         health -= damageDealer.GetDamage();
         if (health <= 0)
         {
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    private void Die()
+    {
+        Destroy(gameObject);
+        GameObject explosionVFX = Instantiate(explosionVFXPrefab, transform.position, Quaternion.identity) as GameObject;
+        AudioSource.PlayClipAtPoint(deathClip, Camera.main.transform.position, deathSoundVolume);
+        Destroy(explosionVFX, 1f);
+        FindObjectOfType<GameSession>().AddToScore();
     }
 }
