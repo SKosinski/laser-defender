@@ -114,14 +114,14 @@ MonoBehaviour:
   explosionVFXPrefab: {fileID: 1892800604195925644, guid: a7f46cb197bc7a14fb66e63c301d4c82,
     type: 3}
   deathClip: {fileID: 8300000, guid: da0cf9c9d14a50d418fffbb1df12576a, type: 3}
-  deathSoundVolume: 0.7
+  deathSoundVolume: 0.2
   minTimeBetweenShots: 1
   maxTimeBetweenShots: 2.5
   laserPrefab: {fileID: 3341743959738726015, guid: aa9f20968ea355248afb92887b1a5ca2,
     type: 3}
   projectileSpeed: 5
   laserClip: {fileID: 8300000, guid: 37602d89412a33c44bdf0a5f90057ee1, type: 3}
-  laserSoundVolume: 0.16
+  laserSoundVolume: 0.1
 --- !u!60 &6768849231201540329
 PolygonCollider2D:
   m_ObjectHideFlags: 0
